@@ -1,7 +1,11 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 
+from dotenv import load_dotenv
 from os import getenv
+
+
+load_dotenv() # теперь getenv сможет прочитать .env
 
 DB_URL = getenv("DATABASE_URL_FOR_PYTHON")
 
