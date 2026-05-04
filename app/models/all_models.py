@@ -1,7 +1,10 @@
 from app.models.basic_model import Base
 
+
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
+
+from datetime import datetime, timezone
 
 class ProductORM(Base):
     """Модель табицы с запасом продуктов"""
@@ -31,4 +34,36 @@ class MenuItemIngredientORM(Base):
     menu_item_id: Mapped[int] = mapped_column(ForeignKey("menu_items.id"), nullable=False) 
     #ай ди соответствующего продукта  из меню
     product_id: Mapped[int]  = mapped_column(ForeignKey("products.id"), nullable=False)
-    amount: Mapped[float] # количтсво продутка в блюде
+    amount: Mapped[float]  
+
+
+class OrdersORM(Base):
+    """Модель таблицы со списокм заказов"""
+
+    __tablename__ = "orders"
+
+    created_at: Mapped[datetime] = mapped_column(
+        default = lambda: datetime.now(timezone.utc) # по умолчанию при создании заказа 
+        # будет присваиватся время создания с учетом временной зоны
+
+        )
+
+class OrderItemORM(Base):
+    """Модель таблицы с параметрами заказа"""
+
+    __tablename__ = "order_items"
+
+    order_id: Mapped[int] = mapped_column(ForeignKey("orders.id"), nullable=False)
+    menu_item_id: Mapped[int] = mapped_column(ForeignKey("menu_items.id"), nullable=False)
+
+    quantity: Mapped[int]
+
+
+
+
+
+
+
+
+
+

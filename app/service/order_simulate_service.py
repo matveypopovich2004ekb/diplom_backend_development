@@ -64,6 +64,9 @@ class SimulateOrderService():
             """ """
 
             try:
+                order = self.repository.create_new_order() # добавляем в таблицу заказов заказ
+                self.db.flush()
+
                 used_products = [] # это потом будем использовать для SimulateOrderResponse
 
                 order_item_list = payload.items # список из SimulateOrderItem()
@@ -71,6 +74,12 @@ class SimulateOrderService():
                 products_used_quantity = {} # {product_id : used_quantity}
 
                 for order_item in order_item_list: # order_item ЭТО SimulateOrderItem()
+                    
+                    self.repository.create_new_order_item(
+                        order_id=order.id, 
+                        menu_item_id= order_item.menu_item_id,
+                        quantity=order_item.quantity
+                    ) # добавляем в таблицу OrderItemORM строку
 
                     ingredients = self.repository.MenuItemIngredientORM_from_menu_item_id(
                         order_item.menu_item_id
@@ -97,7 +106,7 @@ class SimulateOrderService():
                             product_id=product_id,
                             used_quantity=used_quantity
                         ) 
-                    
+                    # готовим ответ на фронтенд, собирая объекты UsedProduct() в список
                     used_products.append(UsedProduct(
                         product_id=product_id,
                         name=product_name,
@@ -105,10 +114,14 @@ class SimulateOrderService():
                         unit=product_unit,
                         remaining_quantity=remaining_quantity
                         ))
-                    
+                
+                
+                
+
+
                 self.db.commit()
 
-                return SimulateOrderResponse(order_id=1, used_products=used_products)
+                return SimulateOrderResponse(order_id=order.id, used_products=used_products)
 
             except Exception:
                 self.db.rollback()
