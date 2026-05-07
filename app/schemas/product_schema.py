@@ -10,6 +10,19 @@ class ProductInfo(BaseModel):
     unit: str #в чем измеряется количество товара
     quantity: float
     critical_quantity: float
+    is_critical: bool # проверяет, хватает ли продукта на складе
+
+
+class ProductCreate(BaseModel):
+    """Схема данных для создания нового Продукта"""
+    
+    model_config = ConfigDict(from_attributes=True)
+
+    name: str
+    unit: str #в чем измеряется количество товара
+    quantity: float
+    critical_quantity: float
+
 
 
 class UsedProduct(BaseModel):

@@ -1,4 +1,4 @@
-from app.models.all_models import ProductORM, MenuORM,MenuItemIngredientORM, OrderItemORM, OrdersORM
+from app.models.all_models import ProductORM, MenuORM, MenuItemIngredientORM, OrderItemORM, OrdersORM
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -16,11 +16,32 @@ class ProductRepository():
         sequence_of_products = self.db.scalars(select(ProductORM)).all()
         return sequence_of_products
     
+    def get_ids_list(self) -> Sequence[int]:
+        """возвращает список всех ID в таблице продуктов(нужен для того, чтобы проверять, есть ли указанный 
+        ингредиент в списке продуктов при добавлении Элемента Меню(блюда)- если непонятно см. class MenuService())"""
+        id_list = self.db.scalars(select(ProductORM.id)).all()
+
+        return id_list
+    
     def get_by_id(self, product_id: int) -> ProductORM | None:
         """Просто по идентификатору продукта получаем его строку из таблицы ProductORM"""
         product = self.db.get(ProductORM, product_id)
+
         return product
+    
+    def create(self, product_atributes: dict) -> ProductORM:
+        """Создает новый продукт"""
+
+        new_product = ProductORM(**product_atributes)
+        self.db.add(new_product)
+        return new_product
+
        
+#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 
 class MenuRepository():
     """тут прописано взаимодействие Menu с БД"""
@@ -34,6 +55,38 @@ class MenuRepository():
         sequence_of_menu_item = self.db.scalars(select(MenuORM)).all()
         return sequence_of_menu_item
     
+    def create_menu_item(self, name: str):
+        """создает блюда в таблице MenuORM"""
+
+        new_menu_item = MenuORM(name=name)
+        self.db.add(new_menu_item)
+
+        return new_menu_item
+    
+    def create_ingredient_for_menu_item(self,
+                                         menu_item_id: int,
+                                         product_id: int,
+                                         amount: int
+                                         ):
+        """добавляем ингредиент к только что созданному элементу меню в MenuItemIngredientORM"""
+
+        new_ingredient = MenuItemIngredientORM(
+            menu_item_id=menu_item_id, product_id=product_id, amount=amount
+        )
+        self.db.add(new_ingredient) 
+
+        return new_ingredient
+        
+
+
+    
+#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
+
+
 class SimulateOrderRepository():
     """тут прописано взаимодействие Menu с БД"""
 

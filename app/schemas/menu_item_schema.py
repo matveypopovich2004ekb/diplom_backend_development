@@ -8,4 +8,20 @@ class MenuItemInfo(BaseModel):
     id: int
     name: str 
 
+
+class Ingredient(BaseModel):
+    """схема интгредиента блюда MenuItem для схемы MenuItemCreate"""
+
+    product_id: int
+    amount: float
+
+
+class MenuItemCreate(BaseModel):
+    """схема для создания пункта меню(нового блюда)"""
+
+    name: str
+    ingredients: list[Ingredient]
+
+
+
     

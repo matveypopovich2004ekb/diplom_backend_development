@@ -14,7 +14,11 @@ class ProductORM(Base):
     name: Mapped[str]
     unit: Mapped[str] #в чем измеряется количество товара
     quantity: Mapped[float] # количтсво товара
-    critical_quantity: Mapped[float] # количество, когданадо делать новый закуп
+    critical_quantity: Mapped[float] # количество, когда надо делать новый закуп
+
+    @property # проверка - достиг ли запас товара уровня, когда нужно закупать
+    def is_critical(self) -> bool:
+        return self.quantity <= self.critical_quantity
 
 
 class MenuORM(Base):
