@@ -35,3 +35,11 @@ class UsedProduct(BaseModel):
     used_quantity: float
     unit: str
     remaining_quantity: float
+
+
+class ProductUpdate(BaseModel):
+    """схема для обновления продукта"""
+    model_config = ConfigDict(from_attributes=True)
+
+    quantity: float | None = None
+    critical_quantity: float | None = None

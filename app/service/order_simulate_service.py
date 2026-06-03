@@ -1,6 +1,6 @@
 from app.repository.order_simulate_repository import ProductRepository, MenuRepository, SimulateOrderRepository
 
-from app.schemas.product_schema import ProductInfo, UsedProduct, ProductCreate
+from app.schemas.product_schema import ProductInfo, ProductUpdate, UsedProduct, ProductCreate
 from app.schemas.menu_item_schema import MenuItemInfo, MenuItemCreate
 from app.schemas.order_schema import SimulateOrderRequest, SimulateOrderResponse
 
@@ -36,6 +36,32 @@ class ProductService():
         self.db.commit()
 
         return ProductInfo.model_validate(new_product)
+    
+    def update_product(self, product_id: int, payload: ProductUpdate) -> ProductInfo:
+
+        product = self.repository.get_by_id(product_id=product_id)
+        if product is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="продукт не найден"
+            )
+
+        if payload.quantity is not None:
+            product.quantity = payload.quantity 
+        if payload.critical_quantity is not None:
+            product.critical_quantity = payload.critical_quantity 
+
+        self.db.commit()
+        self.db.refresh(product)
+
+        return ProductInfo.model_validate(product)
+    
+    def delete_product(self, product_id: int):
+        
+        self.repository.delete_product(product_id)
+        self.db.commit()
+        return 
+
 
     def edit_product_quantity_by_product_id(self, product_id: int, used_quantity: float) -> tuple[float, str, str]: 
         """метод будет вычитать количество товара по id.
@@ -89,7 +115,7 @@ class MenuService():
         for ingr in ingredients: #перебор всех ингредиентов нового блюда
             menu_item_id, product_id, amount = new_menu_item.id, ingr.product_id, ingr.amount
 
-            # проведим необходимую валюдацию данных
+            # проводим необходимую валюдацию данных
             if not str(product_id).strip() or not str(amount).strip() or amount <= 0: # проверям значения полей
                 raise ValueError("поля ингредиента не могут быть пустыми или <= 0")
             if product_id not in product_id_full_list:  # проверям, что указанный ингредиент имеется в списке продуктв

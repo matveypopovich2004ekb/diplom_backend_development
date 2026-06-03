@@ -31,6 +31,7 @@ if config.config_file_name is not None:
 
 from app.models.basic_model import Base
 from app.models.all_models import ProductORM, MenuORM, MenuItemIngredientORM
+from app.models.suppplier_models import SuppliersORM, SupplierOfferORM
 
 target_metadata = Base.metadata
 

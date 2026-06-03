@@ -1,0 +1,29 @@
+[
+  {
+    "supplier": "barista_ltd",
+    "product_name": "Кофе в зернах AltaRoma Arabica 1000 г",
+    "price": 1451.48,
+    "price_raw": "от 1 451.48 руб.",
+    "package_quantity": "1000 г",
+    "package_quantity_raw": "1000 г",
+    "url": "https://www.barista-ltd.ru/magazin/kofe-v-zernakh-almafood-altaroma-arabica-1kg.html"
+  },
+  {
+    "supplier": "napolke",
+    "product_name": "Кофе в зернах Lebo Original Арабика 100 гр., флоу-пак",
+    "price": 170.63,
+    "price_raw": "170 .63 ₽",
+    "package_quantity": "100 гр, 1 шт в упаковке",
+    "package_quantity_raw": "100 гр, 1 шт в упаковке",
+    "url": "https://napolke.ru/catalog/product/kofe_v_zernax_lebo_original_arabika_100_gr_flou_pak-8dd9ca45-3ce4-4289-8070-68d868b351f6"
+  },
+  {
+    "supplier": "cofe_optom",
+    "product_name": "Кофе в мешках Робуста 100% высший сорт зерно",
+    "price": 1150.0,
+    "price_raw": "1150 р. за шт.",
+    "package_quantity": "за 1 кг",
+    "package_quantity_raw": "за 1 кг",
+    "url": "https://www.cofe-optom.ru/product/robusta-100-vysshij-sort-9578/"
+  }
+]

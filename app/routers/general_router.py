@@ -1,26 +1,14 @@
 from fastapi import APIRouter, status, Depends
 
+from app.schemas.supplier_schema import SupplierOfferInfo, SupplierParseResponse
 from app.schemas.order_schema import SimulateOrderRequest, SimulateOrderResponse
-from app.schemas.product_schema import ProductInfo, ProductCreate
+from app.schemas.product_schema import ProductInfo, ProductCreate, ProductUpdate
 from app.schemas.menu_item_schema import MenuItemInfo, MenuItemCreate
-from app.routers.dependencies import get_product_service, get_menu_service, get_simulate_order_service
+from app.routers.dependencies import get_product_service, get_menu_service, get_simulate_order_service, get_supplier_service
 
 router = APIRouter(prefix="/api")
 
 
-TestProductList = [
-    {"id": 1,
-    "name": "Молоко",
-    "unit": "ml",
-    "quantity": 5000,
-    "critical_quantity": 1000},
-
-    {"id": 2,
-    "name": "Зерна кофе",
-    "unit": "g",
-    "quantity": 3000,
-    "critical_quantity": 6500}
-]
 
 # получаем список продуктов
 @router.get(
@@ -59,15 +47,47 @@ def create_product(payload: ProductCreate,
     response = service.create_new_product(payload=payload)
     return response
 
-
+@router.patch("/products/{product_id}", status_code=status.HTTP_200_OK, response_model=ProductInfo)
+def update_product(product_id: int,
+                    payload: ProductUpdate, 
+                   service = Depends(get_product_service)) -> ProductInfo:
     
-#
+    response = service.update_product(product_id=product_id, payload=payload)
+    return response
+    
+@router.delete("/products/{product_id}", status_code=status.HTTP_204_NO_CONTENT)
+def create_product(product_id: int,
+                   service = Depends(get_product_service)) -> None:
+    
+    result = service.delete_product(product_id=product_id)
+    return 
+
+
+# добавить блюдо в Меню
 @router.post("/menu-items", status_code=status.HTTP_201_CREATED, response_model=MenuItemInfo)
 def create_menu_item(payload:  MenuItemCreate, service = Depends(get_menu_service)):
 
     response = service.create_new_menu_item(payload)
     return response
     
+
+# обновление предложений поставщиков
+@router.post("/supplier-offers/parse/coffee",
+              status_code=status.HTTP_201_CREATED, 
+              response_model=SupplierParseResponse)
+def response_aboute_update_of_offers(service = Depends(get_supplier_service)):
+    
+    response = service.update_suppliers_offers()
+    return response
+
+
+@router.get("/products/{product_id}/supplier-offers", 
+            response_model = list[SupplierOfferInfo],
+            status_code=status.HTTP_200_OK)
+def get_suppliers_list(product_id: int, service = Depends(get_supplier_service)):
+
+    response = service.get_suppliers_offers_list(product_id)
+    return response
 
 
 

@@ -1,18 +1,34 @@
 from app.data_base.db_session import session_local_class
-from app.models. all_models import ProductORM, MenuORM, MenuItemIngredientORM
+from app.models.all_models import (
+    ProductORM,
+    MenuORM,
+    MenuItemIngredientORM,
+    OrdersORM,
+    OrderItemORM
+    
+)
+from app.models.suppplier_models import SuppliersORM, SupplierOfferORM
 
 
-def seed_database():
-    db_session = session_local_class()
+def reset_database():
+    db = session_local_class()
 
     try:
-        # Проверяем, не заполнена ли база уже
-        existing_product = db_session.query(ProductORM).first()
-        if existing_product:
-            print("База уже содержит продукты. Seed отменён.")
-            return
+        # Удаляем сначала зависимые таблицы, потом основные
+        db.query(SupplierOfferORM).delete()
+        db.query(OrderItemORM).delete()
+        db.query(OrdersORM).delete()
+        db.query(MenuItemIngredientORM).delete()
+        db.query(MenuORM).delete()
+        db.query(ProductORM).delete()
+        db.query(SuppliersORM).delete()
 
+        db.commit()
+
+        # -------------------------
         # 1. Продукты
+        # -------------------------
+
         milk = ProductORM(
             name="Молоко",
             unit="ml",
@@ -34,27 +50,26 @@ def seed_database():
             critical_quantity=500,
         )
 
-        db_session.add_all([milk, coffee, sugar])
-        db_session.commit()
+        db.add_all([milk, coffee, sugar])
+        db.flush()
 
-        db_session.refresh(milk)
-        db_session.refresh(coffee)
-        db_session.refresh(sugar)
+        # -------------------------
+        # 2. Меню
+        # -------------------------
 
-        # 2. Блюда меню
         latte = MenuORM(name="Латте")
         cappuccino = MenuORM(name="Капучино")
         americano = MenuORM(name="Американо")
 
-        db_session.add_all([latte, cappuccino, americano])
-        db_session.commit()
+        db.add_all([latte, cappuccino, americano])
+        db.flush()
 
-        db_session.refresh(latte)
-        db_session.refresh(cappuccino)
-        db_session.refresh(americano)
-
+        # -------------------------
         # 3. Состав блюд
+        # -------------------------
+
         ingredients = [
+            # Латте
             MenuItemIngredientORM(
                 menu_item_id=latte.id,
                 product_id=milk.id,
@@ -71,6 +86,7 @@ def seed_database():
                 amount=10,
             ),
 
+            # Капучино
             MenuItemIngredientORM(
                 menu_item_id=cappuccino.id,
                 product_id=milk.id,
@@ -87,6 +103,7 @@ def seed_database():
                 amount=5,
             ),
 
+            # Американо
             MenuItemIngredientORM(
                 menu_item_id=americano.id,
                 product_id=coffee.id,
@@ -94,18 +111,35 @@ def seed_database():
             ),
         ]
 
-        db_session.add_all(ingredients)
-        db_session.commit()
+        db.add_all(ingredients)
 
-        print("Тестовые данные успешно добавлены.")
+        # -------------------------
+        # 4. Поставщики
+        # -------------------------
 
-    except Exception as error:
-        db_session.rollback()
-        print("Ошибка при заполнении БД:", error)
+        suppliers = [
+            SuppliersORM(name="barista_ltd"),
+            SuppliersORM(name="napolke"),
+            SuppliersORM(name="cofe_optom"),
+        ]
+
+        db.add_all(suppliers)
+
+        # supplier_offers НЕ заполняем вручную.
+        # Их позже будет создавать/обновлять парсер.
+
+        db.commit()
+
+        print("БД успешно перезаполнена тестовыми данными.")
+
+    except Exception as exc:
+        db.rollback()
+        print("Ошибка при заполнении БД:", exc)
+        raise
 
     finally:
-        db_session.close()
+        db.close()
 
 
 if __name__ == "__main__":
-    seed_database()
+    reset_database()

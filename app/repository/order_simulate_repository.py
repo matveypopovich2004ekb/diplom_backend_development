@@ -25,10 +25,22 @@ class ProductRepository():
     
     def get_by_id(self, product_id: int) -> ProductORM | None:
         """Просто по идентификатору продукта получаем его строку из таблицы ProductORM"""
+        
         product = self.db.get(ProductORM, product_id)
 
         return product
     
+    def get_product_by_name(self, product_name: str) -> ProductORM:
+        """ парсер присылает инфу с указанием назваания продукта, а не id
+        поэтому нам нужен такой метод"""
+
+        #получаем продукт по его названию
+        product_by_name = self.db.scalar(
+            select(ProductORM).where(ProductORM.name == product_name)
+        ) 
+
+        return product_by_name
+
     def create(self, product_atributes: dict) -> ProductORM:
         """Создает новый продукт"""
 
@@ -36,6 +48,13 @@ class ProductRepository():
         self.db.add(new_product)
         return new_product
 
+    def delete_product(self, product_id: int):
+        # проверим что продукт вообще есть
+        product = self.get_by_id(product_id)
+        if product is not None:
+            self.db.delete(product)
+
+        return
        
 #------------------------------------------------------------------------------
 #------------------------------------------------------------------------------
