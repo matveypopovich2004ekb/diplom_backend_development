@@ -14,4 +14,8 @@ app.add_middleware(
     allow_credentials=True,
 )
 
+@app.get("/health")
+def health_check():
+    return {"status": "ok"}
+
 app.include_router(general_router)

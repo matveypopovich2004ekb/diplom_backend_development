@@ -7,7 +7,10 @@ from os import getenv
 
 load_dotenv() # теперь getenv сможет прочитать .env
 
-DB_URL = getenv("DATABASE_URL_FOR_PYTHON") #берем адрес БДдля подключения в  .env
+DB_URL = getenv("DATABASE_URL") #берем адрес БДдля подключения в  .env
+
+if DB_URL is None:
+    raise RuntimeError("DATABASE_URL_FOR_PYTHON is not set")
 
 # устанавливаем связь с БД и содаем сессион
 engine = create_engine(DB_URL)
