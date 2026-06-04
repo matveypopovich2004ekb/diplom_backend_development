@@ -13,7 +13,7 @@ load_dotenv()
 # access to the values within the .ini file in use.
 config = context.config
 
-database_url = os.getenv("DATABASE_URL_FOR_PYTHON")
+database_url = os.getenv("DATABASE_URL")
 
 if database_url is None:
     raise RuntimeError("DATABASE_URL is not set in .env")
